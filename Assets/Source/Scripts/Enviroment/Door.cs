@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
-public class Door : MonoBehaviour, IPointerDownHandler
+public class Door : MonoBehaviour
 {
     [SerializeField] private Vector3 _openRotation; 
     [SerializeField] private Transform _transform; 
@@ -16,11 +15,28 @@ public class Door : MonoBehaviour, IPointerDownHandler
         _closedRotation = _transform.eulerAngles;
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    private void Update()
     {
-        ToggleDoor();
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Began)
+            {
+                Ray ray = Camera.main.ScreenPointToRay(touch.position);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit))
+                {
+                    if (hit.collider.gameObject == gameObject)
+                    {
+                        ToggleDoor();
+                    }
+                }
+            }
+        }
     }
-    
+
     private void ToggleDoor()
     {
         if (!_isOpen)
