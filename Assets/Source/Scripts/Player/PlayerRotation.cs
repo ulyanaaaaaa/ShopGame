@@ -2,15 +2,15 @@ using UnityEngine;
 
 public class PlayerRotation : MonoBehaviour
 {
-    [SerializeField] private float _sensitivity = 2f;
+    [SerializeField] private float _sensitivity;
     [SerializeField] private float _maxVerticalAngle; 
     [SerializeField] private float _minVerticalAngle;
 
     private Vector2 _startTouchPosition;
     private bool _isDragging;
 
-    private float _currentVerticalAngle = 0f; 
-    private float _currentHorizontalAngle = 0f; 
+    private float _currentVerticalAngle; 
+    private float _currentHorizontalAngle; 
 
     private void Update()
     {

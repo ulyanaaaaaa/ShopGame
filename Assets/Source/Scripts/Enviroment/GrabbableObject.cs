@@ -1,21 +1,23 @@
 using UnityEngine;
-using UnityEngine.UI;
+using Zenject;
 
 [RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(BoxCollider))]
 public class GrabbableObject : MonoBehaviour
 {
-    [SerializeField] private Transform _hand;
-    [SerializeField] private Button _throwButton;
     [SerializeField] private float _impulse;
     [SerializeField] private float _maxPickupDistance;
 
     private GameObject _currentItem;
+    
+    [Inject]
+    private ThrowButton _throwButton;
+    [Inject]
+    private LeftHand _hand;
 
     private void Start()
     {
-        _throwButton.gameObject.SetActive(false);
-        _throwButton.onClick.AddListener(ThrowItem);
+        _throwButton.OnThrowButtonClicked += ThrowItem; 
     }
 
     private void Update()
@@ -47,23 +49,22 @@ public class GrabbableObject : MonoBehaviour
     private void PickUpItem(GameObject item)
     {
         _currentItem = item;
-        _currentItem.transform.SetParent(_hand);
+        _currentItem.transform.SetParent(_hand.transform);
         _currentItem.transform.localPosition = Vector3.zero;
         _currentItem.GetComponent<BoxCollider>().enabled = false;
         _currentItem.GetComponent<Rigidbody>().isKinematic = true;
-        _throwButton.gameObject.SetActive(true);
+        _throwButton.ShowButton(); 
     }
 
-    private void ThrowItem()
+    public void ThrowItem()
     {
         if (_currentItem != null)
-        { 
+        {
             _currentItem.GetComponent<BoxCollider>().enabled = true;
             _currentItem.GetComponent<Rigidbody>().isKinematic = false;
             _currentItem.transform.SetParent(null);
             _currentItem.GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * _impulse);
             _currentItem = null;
-            _throwButton.gameObject.SetActive(false);
         }
     }
 }
